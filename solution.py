@@ -54,7 +54,7 @@ def build_packet():
     My_ID = os.getpid() & 0xFFFF
     time_sent = time.time()
     header = struct.pack("bbHHh",ICMP_ECHO_REQUEST,0,My_Checksum,My_ID,1)
-    data = struct.pack("d",time_sent)
+    data = struct.pack("d",time.time())
     # So the function ending should look like this
  
     My_Checksum = checksum(header+data)
@@ -67,15 +67,17 @@ def build_packet():
     header = struct.pack("bbHHh",ICMP_ECHO_REQUEST,0,My_Checksum,My_ID,1)
 
     packet = header + data
+
     return packet
  
 def get_route(hostname):
-    timeLeft = TIMEOUT
+    #timeLeft = TIMEOUT
     tracelist1 = [] #This is your list to use when iterating through each trace 
     tracelist2 = [] #This is your list to contain all traces
  
     for ttl in range(1,MAX_HOPS):
         for tries in range(TRIES):
+            timeLeft = TIMEOUT
             destAddr = gethostbyname(hostname)
  
             #Fill in start
@@ -104,7 +106,7 @@ def get_route(hostname):
                 timeReceived = time.time()
                 timeLeft = timeLeft - howLongInSelect
                 if timeLeft <= 0:
-                    tracelist1.append("* * * Request timed out.")
+                    #tracelist1.append("* * * Request timed out.")
                     print ("* * * Request timed out.")
                     #Fill in start
                     #You should add the list above to your all traces list
@@ -117,6 +119,7 @@ def get_route(hostname):
                 #Fill in start
                 #Fetch the icmp type from the IP packet
                 type,code,checksum,id,Sequence,timesent = struct.unpack('bbHHhd',recvPacket[20:36])
+                rtt = (timeReceived-struct.unpack("d",recvPacket[28:36])[0])*1000
                 types = struct.unpack('b',recvPacket[20:21])
                 #Fill in end
                 try: #try to fetch the hostname
@@ -130,14 +133,13 @@ def get_route(hostname):
  
                 if types == 11:
                     bytes = struct.calcsize("d")
-                    timeSent = struct.unpack("d", recvPacket[28:28 +
-                    bytes])[0]
+                    timeSent = struct.unpack("d", recvPacket[28:28 + bytes])[0]
                     #Fill in start
                     #You should add your responses to your lists here
-                    rtt = str(round(timesent*1000)) + "ms"
+                    #rtt = str(round(timesent*1000)) + "ms"
                     tracelist1.append([str(ttl),rtt,str(addr[0]),sourcehostname])
                     tracelist2.append(tracelist1[-1])
-                    print(" %d rtt=%.0f ms %s" %(ttl,(timeReceived -t)*1000, addr[0]))
+                    print(" %d rtt=%.0f ms %s" %(ttl,(timeReceived -t)*1000, addr[0]),sourcehostname)
                     #Fill in end
 
                 elif types == 3:
@@ -148,7 +150,7 @@ def get_route(hostname):
                     #You should add your responses to your lists here 
                     tracelist1.append([str(ttl),rtt,'Request timed out'])
                     tracelist2.append(tracelist1[-1])
-                    print(" %d rtt=%.0f ms %s" %(ttl,(timeReceived-t)*1000, addr[0]))
+                    print(" %d rtt=%.0f ms %s" %(ttl,(timeReceived-t)*1000, addr[0]),sourcehostname)
                     #Fill in end
                 elif types == 0:
                     bytes = struct.calcsize("d")
@@ -158,7 +160,7 @@ def get_route(hostname):
                     #You should add your responses to your lists here and return your list if your destination IP is met
                     tracelist1.append([str(ttl),rtt,str(addr[0]),sourcehostname])
                     tracelist2.append(tracelist1[-1])
-                    print(" %d rtt=%.0f ms %s" %(ttl,(timeReceived - timeSent)*1000, addr[0]))
+                    print(" %d rtt=%.0f ms %s" %(ttl,(timeReceived - timeSent)*1000, addr[0]),sourcehostname)
                     #Fill in end
                 else:
                     #Fill in start
@@ -169,4 +171,4 @@ def get_route(hostname):
                 break
             finally:
                 mySocket.close()
-get_route('google.com')
+get_route('www.youtube.com')
