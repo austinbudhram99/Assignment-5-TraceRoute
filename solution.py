@@ -171,4 +171,5 @@ def get_route(hostname):
                 break
             finally:
                 mySocket.close()
+    return tracelist2
 #get_route('www.youtube.com')
