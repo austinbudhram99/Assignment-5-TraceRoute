@@ -71,15 +71,17 @@ def build_packet():
     return packet
  
 def get_route(hostname):
-    #timeLeft = TIMEOUT
+    timeLeft = TIMEOUT
     tracelist1 = [] #This is your list to use when iterating through each trace 
     tracelist2 = [] #This is your list to contain all traces
  
     for ttl in range(1,MAX_HOPS):
+        tracelist1 = []
+        tracelist1.append(str(ttl))
         for tries in range(TRIES):
-            tracelist1 = []
-            tracelist1.append(ttl)
-            timeLeft = TIMEOUT
+            #tracelist1 = []
+            #tracelist1.append(ttl)
+            #timeLeft = TIMEOUT
             destAddr = gethostbyname(hostname)
  
             #Fill in start
@@ -131,7 +133,7 @@ def get_route(hostname):
                 #Fill in end
                 try: #try to fetch the hostname
                     #Fill in start
-                    tracelist1.append(gethostbyaddr(addr[0])[0])
+                    tracelist1.append(gethostbyaddr(str(addr[0]))[0])
                     #sourcehostname = gethostbyaddr(addr[0])[0]
                     #Fill in end
                 except herror:   #if the host does not provide a hostname
@@ -147,7 +149,7 @@ def get_route(hostname):
                     #You should add your responses to your lists here
                     #rtt = str(round(timesent*1000)) + "ms"
                     #tracelist1.append([str(ttl),rtt,str(addr[0]),sourcehostname])
-                    tracelist1.insert(-1,(str(int((timeReceived-t)*1000))+"ms"))
+                    tracelist1.insert(-1,str(int((timeReceived-t)*1000))+"ms")
                     tracelist1.insert(-1,addr[0])
                     tracelist2.append(tracelist1)
                     #tracelist2.append(tracelist1[-1])
@@ -158,7 +160,7 @@ def get_route(hostname):
                     bytes = struct.calcsize("d")
                     timeSent = struct.unpack("d", recvPacket[28:28 + bytes])[0]
                     #Fill in start
-                    tracelist1.insert(-1,(str(int((timeReceived-t)*1000))+"ms"))
+                    tracelist1.insert(-1,str(int((timeReceived-t)*1000))+"ms")
                     tracelist1.insert(-1,addr[0])
                     tracelist2.append(tracelist1)
                     #rtt = "*"
@@ -171,7 +173,7 @@ def get_route(hostname):
                     bytes = struct.calcsize("d")
                     timeSent = struct.unpack("d", recvPacket[28:28 + bytes])[0]
                     #Fill in start
-                    tracelist1.insert(-1,(str(int((timeReceived-t)*1000))+"ms"))
+                    tracelist1.insert(-1,str(int((timeReceived-t)*1000))+"ms")
                     tracelist1.insert(-1,addr[0])
                     tracelist2.append(tracelist1)
                     #rtt = str(round((t-timesent)*1000)) + "ms"
@@ -190,5 +192,5 @@ def get_route(hostname):
             finally:
                 mySocket.close()
         print(" ".join(str(tracelist1)))
-        return tracelist2
-#get_route('www.youtube.com')
+    return tracelist2
+get_route('www.google.com')
