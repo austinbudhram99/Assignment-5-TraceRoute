@@ -119,7 +119,8 @@ def get_route(hostname):
                 #Fill in start
                 #Fetch the icmp type from the IP packet
                 type,code,checksum,id,Sequence,timesent = struct.unpack('bbHHhd',recvPacket[20:36])
-                rtt = (timeReceived-struct.unpack("d",recvPacket[28:36])[0])*1000
+                #rtt = (timeReceived-struct.unpack("d",recvPacket[28:28])[0])*1000
+                rtt = (timeReceived-startedSelect)*1000
                 types = struct.unpack('b',recvPacket[20:21])
                 #Fill in end
                 try: #try to fetch the hostname
