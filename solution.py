@@ -190,5 +190,5 @@ def get_route(hostname):
             finally:
                 mySocket.close()
         print(" ".join(str(tracelist1)))
-    return tracelist2
+        return tracelist2
 #get_route('www.youtube.com')
